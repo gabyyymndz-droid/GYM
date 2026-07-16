@@ -23,6 +23,8 @@ BEGIN
 END;
 GO
 
+
+#FALTAN 2 FUNCIONES/ IGNORAR VISTAS
 -- 1. Clientes activos: clientes con pagos registrados, con total y cantidad de facturas
 CREATE VIEW dbo.vw_ClientesActivos AS
 SELECT c.ID_cliente, c.Nombres, c.Apellidos, m.Nombre AS Membresia,
