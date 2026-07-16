@@ -3,7 +3,7 @@ GO
 CREATE VIEW dbo.vw_ClientesActivos AS
 SELECT 
     C.ID_cliente,
-    C.Nombres + ' ' + C.Apellidos AS Nombre_Completo,
+    C.Nombres + " " + C.Apellidos AS Nombre_Completo,
     C.Telefono,
     M.Nombre AS Membresia,
     M.Precio,
@@ -35,7 +35,7 @@ GO
 CREATE VIEW dbo.vw_InformacionDetalladaClientes AS
 SELECT 
     C.ID_cliente,
-    C.Nombres + ' ' + C.Apellidos AS Cliente,
+    C.Nombres + " " + C.Apellidos AS Cliente,
     C.Telefono AS Telefono_Cliente,
     C.Direccion AS Direccion_Cliente,
     S.Nombre AS Sucursal_Inscrito,
@@ -43,7 +43,7 @@ SELECT
     M.Precio AS Precio_Membresia,
     M.Periodo AS Periodo_Membresia,
     MP.Tipo AS Metodo_Pago_Preferido,
-    E.Nombres + ' ' + E.Apellidos AS Entrenador_Asignado,
+    E.Nombres + " " + E.Apellidos AS Entrenador_Asignado,
     CE.Fecha_Clase,
     CE.Hora_Clase,
     -- Aquí integramos limpiamente la FUNCIÓN 1 de Franco para ver su histórico financiero:
@@ -61,8 +61,8 @@ GO
 CREATE VIEW dbo.vw_ActividadesUltimoMes AS
 SELECT 
     CE.ID_cliente_entrenador AS ID_Reserva,
-    C.Nombres + ' ' + C.Apellidos AS Cliente,
-    E.Nombres + ' ' + E.Apellidos AS Entrenador,
+    C.Nombres + " " + C.Apellidos AS Cliente,
+    E.Nombres + " " + E.Apellidos AS Entrenador,
     CE.Fecha_Clase,
     CE.Hora_Clase,
     T.Horas_rango AS Horario_Turno
@@ -91,7 +91,7 @@ GO
 CREATE VIEW dbo.vw_RankingElementosMasUsados AS
 SELECT TOP 5
     E.ID_entrenador,
-    E.Nombres + ' ' + E.Apellidos AS Entrenador,
+    E.Nombres + " " + E.Apellidos AS Entrenador,
     S.Nombre AS Sucursal,
     COUNT(CE.ID_cliente_entrenador) AS Total_Clases_Impartidas,
     RANK() OVER (ORDER BY COUNT(CE.ID_cliente_entrenador) DESC) AS Posicion_Ranking
