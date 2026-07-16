@@ -22,9 +22,32 @@ BEGIN
                 ELSE 'Vencida' END;
 END;
 GO
+--Función de la imagen que tú necesitas para tu Vista 2
 
+CREATE FUNCTION dbo.fn_TotalPagosCliente (@ID_cliente INT)
+RETURNS MONEY
+AS
+BEGIN
+    DECLARE @Total MONEY;
+    SELECT @Total = ISNULL(SUM(Monto), 0) 
+    FROM FACTURA 
+    WHERE ID_cliente = @ID_cliente AND Estado = 'Pagado';
+    RETURN @Total;
+END;
+GO
+--Función de la imagen para segmentación geográfica (Uso de Calvo/Vistas)
+GO
+CREATE FUNCTION dbo.fn_ClientesPorSucursal (@ID_sucursal INT)
+RETURNS TABLE
+AS
+RETURN 
+(
+    SELECT ID_cliente, Nombres, Apellidos, Telefono, ID_membresia
+    FROM CLIENTE
+    WHERE ID_sucursal = @ID_sucursal
+);
+GO
 
-#FALTAN 2 FUNCIONES/ IGNORAR VISTAS
 -- 1. Clientes activos: clientes con pagos registrados, con total y cantidad de facturas
 CREATE VIEW dbo.vw_ClientesActivos AS
 SELECT c.ID_cliente, c.Nombres, c.Apellidos, m.Nombre AS Membresia,
