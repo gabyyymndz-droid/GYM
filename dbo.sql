@@ -23,7 +23,6 @@ SELECT
     M.Nombre AS Plan_Membresia,
     M.Periodo,
     MP.Tipo AS Forma_Pago,
-    -- Usamos la función de Franco para traer el total histórico que ha gastado el cliente:
     dbo.fn_TotalPagosCliente(C.ID_cliente) AS Total_Pagado_Historico
 FROM CLIENTE C
 INNER JOIN MEMBRESIA M ON C.ID_membresia = M.ID_membresia
@@ -46,7 +45,6 @@ SELECT
     E.Nombres + " " + E.Apellidos AS Entrenador_Asignado,
     CE.Fecha_Clase,
     CE.Hora_Clase,
-    -- Aquí integramos limpiamente la FUNCIÓN 1 de Franco para ver su histórico financiero:
     dbo.fn_TotalPagosCliente(C.ID_cliente) AS Total_Pagado_Historico
 FROM CLIENTE C
 INNER JOIN SUCURSAL S ON C.ID_sucursal = S.ID_sucursal
