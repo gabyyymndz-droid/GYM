@@ -1,0 +1,118 @@
+USE DaddysGiovaGym;
+GO
+
+CREATE OR ALTER PROCEDURE seguridad.sp_RegistrarCliente
+(
+    @Nombres VARCHAR(60),
+    @Apellidos VARCHAR(60),
+    @Telefono CHAR(8),
+    @Direccion VARCHAR(150),
+    @ID_sucursal INT,
+    @ID_membresia INT,
+    @ID_metodo_pago INT
+)
+AS
+BEGIN
+    SET NOCOUNT ON;
+    BEGIN TRY
+        BEGIN TRANSACTION;
+        INSERT INTO CLIENTE
+        (Nombres,Apellidos,Telefono,Direccion,ID_sucursal,ID_membresia,ID_metodo_pago)
+        VALUES
+        (@Nombres,@Apellidos,@Telefono,@Direccion,@ID_sucursal,@ID_membresia,@ID_metodo_pago);
+        COMMIT TRANSACTION;
+        PRINT 'Cliente registrado correctamente.';
+    END TRY
+    BEGIN CATCH
+        IF @@TRANCOUNT>0 ROLLBACK TRANSACTION;
+        PRINT ERROR_MESSAGE();
+    END CATCH
+END;
+GO
+
+CREATE OR ALTER PROCEDURE seguridad.sp_ActualizarCliente
+(
+    @ID_cliente INT,
+    @Telefono CHAR(8),
+    @Direccion VARCHAR(150),
+    @ID_sucursal INT,
+    @ID_membresia INT,
+    @ID_metodo_pago INT
+)
+AS
+BEGIN
+    SET NOCOUNT ON;
+    BEGIN TRY
+        BEGIN TRANSACTION;
+        UPDATE CLIENTE
+        SET Telefono=@Telefono,
+            Direccion=@Direccion,
+            ID_sucursal=@ID_sucursal,
+            ID_membresia=@ID_membresia,
+            ID_metodo_pago=@ID_metodo_pago
+        WHERE ID_cliente=@ID_cliente;
+
+        IF @@ROWCOUNT=0
+            RAISERROR('No existe el cliente indicado.',16,1);
+
+        COMMIT TRANSACTION;
+        PRINT 'Cliente actualizado correctamente.';
+    END TRY
+    BEGIN CATCH
+        IF @@TRANCOUNT>0 ROLLBACK TRANSACTION;
+        PRINT ERROR_MESSAGE();
+    END CATCH
+END;
+GO
+
+CREATE OR ALTER PROCEDURE seguridad.sp_BuscarClienteDinamico
+(
+    @Busqueda VARCHAR(60)
+)
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    SELECT
+        C.ID_cliente,
+        C.Nombres,
+        C.Apellidos,
+        C.Telefono,
+        C.Direccion,
+        S.Nombre AS Sucursal,
+        M.Nombre AS Membresia
+    FROM CLIENTE C
+    INNER JOIN SUCURSAL S ON C.ID_sucursal=S.ID_sucursal
+    INNER JOIN MEMBRESIA M ON C.ID_membresia=M.ID_membresia
+    WHERE C.Nombres LIKE '%' + @Busqueda + '%'
+       OR C.Apellidos LIKE '%' + @Busqueda + '%'
+       OR C.Telefono LIKE '%' + @Busqueda + '%'
+       OR C.Direccion LIKE '%' + @Busqueda + '%'
+    ORDER BY C.Nombres,C.Apellidos;
+END;
+GO
+
+CREATE OR ALTER PROCEDURE seguridad.sp_ReporteFacturacionFechas
+(
+    @FechaInicio DATE,
+    @FechaFin DATE
+)
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    SELECT
+        F.ID_factura,
+        F.Fecha_emision,
+        C.ID_cliente,
+        C.Nombres + ' ' + C.Apellidos AS Cliente,
+        MP.Tipo AS Metodo_Pago,
+        F.Monto,
+        F.Estado
+    FROM FACTURA F
+    INNER JOIN CLIENTE C ON F.ID_cliente=C.ID_cliente
+    INNER JOIN METODO_PAGO MP ON F.ID_metodo_pago=MP.ID_metodo_pago
+    WHERE F.Fecha_emision BETWEEN @FechaInicio AND @FechaFin
+    ORDER BY F.Fecha_emision, Cliente;
+END;
+GO
